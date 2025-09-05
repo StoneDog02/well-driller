@@ -2,11 +2,11 @@ import type { MetaFunction } from "@remix-run/node";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "About Us - Your Brand" },
+    { title: "About Us - Stokes Water Well" },
     {
       name: "description",
       content:
-        "Learn more about Your Brand and our mission to deliver exceptional value.",
+        "Learn about Stokes Water Well's experience, team, and commitment to quality residential well drilling services.",
     },
   ];
 };
@@ -19,13 +19,20 @@ export default function About() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-              About <span className="text-primary-600">Your Brand</span>
+              About <span className="text-primary-600">Stokes Water Well</span>
             </h1>
             <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
-              We&apos;re passionate about creating exceptional experiences and
-              delivering value to our customers through innovation and
-              dedication.
+              Your trusted local experts in residential well drilling. 
+              We bring years of experience and a commitment to quality service to every project.
             </p>
+            <div className="mt-8 bg-white rounded-lg shadow-lg p-6 max-w-2xl mx-auto border-l-4 border-primary-600">
+              <div className="text-center">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Located in Garland, Utah</h3>
+                <p className="text-gray-700">
+                  Serving Garland, UT and the surrounding communities
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -39,36 +46,36 @@ export default function About() {
                 Our Mission
               </h2>
               <p className="text-lg text-gray-700 mb-6 leading-relaxed">
-                At Your Brand, we believe in the power of innovation and the
-                importance of building meaningful connections with our
-                customers. Our mission is to provide solutions that not only
-                meet but exceed expectations, creating lasting value for
-                everyone we serve.
+                Stokes Drilling is a well-established well drilling contractor located in Garland, Utah. 
+                We are recognized for our reliability and commitment to serving the local community 
+                with high-quality drilling services. With our base in the heart of Garland, we have 
+                built a reputation for providing essential water well solutions to our clients.
               </p>
               <p className="text-lg text-gray-700 mb-6 leading-relaxed">
-                We&apos;re committed to excellence in everything we do, from the
-                products we create to the relationships we build. Our team works
-                tirelessly to ensure that every interaction with Your Brand
-                leaves a positive, lasting impression.
+                We understand that access to clean, reliable water is essential for every home. 
+                Our mission is to provide professional residential well drilling services that 
+                exceed expectations, ensuring your family has the water they need for years to come. 
+                Our experienced team works tirelessly to ensure that every well installation, repair, 
+                or maintenance service meets the highest standards of quality and reliability.
               </p>
               <div className="flex flex-col sm:flex-row gap-6">
                 <div className="text-center sm:text-left">
-                  <div className="text-3xl font-bold text-primary-600 mb-2">
-                    5+
-                  </div>
+                                <div className="text-3xl font-bold text-accent-800 mb-2">
+                10+
+              </div>
                   <div className="text-gray-600">Years of Experience</div>
                 </div>
                 <div className="text-center sm:text-left">
-                  <div className="text-3xl font-bold text-primary-600 mb-2">
-                    100+
-                  </div>
-                  <div className="text-gray-600">Happy Clients</div>
+                                <div className="text-3xl font-bold text-accent-800 mb-2">
+                200+
+              </div>
+                  <div className="text-gray-600">Wells Drilled</div>
                 </div>
                 <div className="text-center sm:text-left">
-                  <div className="text-3xl font-bold text-primary-600 mb-2">
-                    24/7
-                  </div>
-                  <div className="text-gray-600">Support Available</div>
+                                <div className="text-3xl font-bold text-accent-800 mb-2">
+                24/7
+              </div>
+                  <div className="text-gray-600">Emergency Service</div>
                 </div>
               </div>
             </div>
@@ -102,7 +109,7 @@ export default function About() {
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               These core values guide everything we do and shape the way we
-              interact with our customers and community.
+              interact with our customers and deliver our well drilling services.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -123,11 +130,11 @@ export default function About() {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Excellence
+                Quality
               </h3>
               <p className="text-gray-600">
-                We strive for excellence in every project, ensuring the highest
-                quality standards and attention to detail.
+                We strive for excellence in every well drilling project, ensuring the highest
+                quality standards and attention to detail in all our work.
               </p>
             </div>
             <div className="card text-center">
@@ -147,11 +154,11 @@ export default function About() {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Collaboration
+                Reliability
               </h3>
               <p className="text-gray-600">
-                We believe in the power of teamwork and collaboration, working
-                closely with our clients to achieve shared goals.
+                We believe in being dependable and trustworthy, working
+                closely with our clients to ensure their water needs are met reliably.
               </p>
             </div>
             <div className="card text-center">
@@ -171,11 +178,11 @@ export default function About() {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Innovation
+                Integrity
               </h3>
               <p className="text-gray-600">
-                We embrace new ideas and technologies, constantly pushing
-                boundaries to deliver cutting-edge solutions.
+                We conduct business with honesty and transparency, providing
+                fair pricing and honest assessments for all our customers.
               </p>
             </div>
           </div>
@@ -190,8 +197,8 @@ export default function About() {
               Meet Our Team
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Our dedicated team of professionals is committed to delivering
-              exceptional results for every project.
+              Our experienced team of well drilling professionals is committed to delivering
+              exceptional results for every residential well project.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -212,12 +219,13 @@ export default function About() {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                John Doe
+                Zachary Larsen
               </h3>
-              <p className="text-primary-600 mb-2">CEO & Founder</p>
+              <p className="text-accent-800 mb-2">Owner & Lead Driller</p>
               <p className="text-gray-600">
-                Visionary leader with over 10 years of experience in the
-                industry.
+                Licensed well drilling professional spearheading Stokes Drilling's operations 
+                and customer service with extensive knowledge in residential well drilling 
+                and water system installation.
               </p>
             </div>
             <div className="card text-center">
@@ -237,11 +245,12 @@ export default function About() {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Jane Smith
+                Field Technician
               </h3>
-              <p className="text-primary-600 mb-2">Creative Director</p>
+              <p className="text-accent-800 mb-2">Well Maintenance Specialist</p>
               <p className="text-gray-600">
-                Creative genius behind our most innovative design solutions.
+                Skilled technician specializing in well repairs, pump installation, 
+                and water system maintenance.
               </p>
             </div>
             <div className="card text-center">
@@ -261,11 +270,12 @@ export default function About() {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Mike Johnson
+                Customer Service
               </h3>
-              <p className="text-primary-600 mb-2">Lead Developer</p>
+              <p className="text-accent-800 mb-2">Project Coordinator</p>
               <p className="text-gray-600">
-                Technical expert ensuring our solutions are robust and scalable.
+                Dedicated to ensuring excellent customer service and smooth 
+                project coordination from start to finish.
               </p>
             </div>
           </div>
