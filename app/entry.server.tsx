@@ -71,16 +71,14 @@ function handleBotRequest(
           pipe(body);
         },
         onShellError(error: unknown) {
+          console.error("BOT SHELL ERROR:", error);
           reject(error);
         },
         onError(error: unknown) {
+          console.error("BOT ERROR:", error);
           responseStatusCode = 500;
-          // Log streaming rendering errors from inside the shell.  Don't log
-          // errors encountered during initial shell rendering since they'll
-          // reject and get logged in handleDocumentRequest.
-          if (shellRendered) {
-            console.error(error);
-          }
+          // Instead of suppressing errors, throw them
+          throw error;
         },
       }
     );
@@ -121,16 +119,14 @@ function handleBrowserRequest(
           pipe(body);
         },
         onShellError(error: unknown) {
+          console.error("BROWSER SHELL ERROR:", error);
           reject(error);
         },
         onError(error: unknown) {
+          console.error("BROWSER ERROR:", error);
           responseStatusCode = 500;
-          // Log streaming rendering errors from inside the shell.  Don't log
-          // errors encountered during initial shell rendering since they'll
-          // reject and get logged in handleDocumentRequest.
-          if (shellRendered) {
-            console.error(error);
-          }
+          // Instead of suppressing errors, throw them
+          throw error;
         },
       }
     );
