@@ -14,6 +14,23 @@ export interface FormSubmission {
   timestamp: string;
   ip?: string;
   userAgent?: string;
+  contacted?: boolean; // Whether the customer has been contacted
+  // Request form fields
+  state?: string;
+  propertyLocation?: string;
+  mailingAddress?: string;
+  hasStartCard?: string;
+  wellPermit?: string;
+  waterRightNumber?: string;
+  wellPurpose?: string;
+  wellType?: string;
+  startMonth?: string;
+  startYear?: string;
+  constructionFinishDate?: string;
+  includePumpBid?: string;
+  requestType?: string;
+  bookPhoneCall?: string;
+  questions?: string;
 }
 
 const STORAGE_DIR = path.join(process.cwd(), 'data');
@@ -68,6 +85,21 @@ export async function deleteSubmission(id: string): Promise<boolean> {
   }
   
   await fs.writeFile(SUBMISSIONS_FILE, JSON.stringify(filtered, null, 2));
+  return true;
+}
+
+// Update contacted status
+export async function updateContactedStatus(id: string, contacted: boolean): Promise<boolean> {
+  const submissions = await loadSubmissions();
+  const submission = submissions.find(s => s.id === id);
+  
+  if (!submission) {
+    return false; // Submission not found
+  }
+  
+  submission.contacted = contacted;
+  
+  await fs.writeFile(SUBMISSIONS_FILE, JSON.stringify(submissions, null, 2));
   return true;
 }
 

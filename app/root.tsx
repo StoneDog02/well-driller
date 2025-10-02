@@ -5,12 +5,15 @@ import {
   Scripts,
   ScrollRestoration,
   useLocation,
+  useLoaderData,
 } from "@remix-run/react";
-import type { LinksFunction } from "@remix-run/node";
+import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
 
 import "./tailwind.css";
 
 export const links: LinksFunction = () => [
+  { rel: "icon", href: "/StokesDrillingLogo.png", type: "image/png" },
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
     rel: "preconnect",
@@ -21,11 +24,27 @@ export const links: LinksFunction = () => [
     rel: "stylesheet",
     href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
   },
+  {
+    rel: "stylesheet",
+    href: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css",
+  },
 ];
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  return json({
+    googleMapsApiKey: process.env.GOOGLE_PLACES_API_KEY,
+  });
+}
 
 function Navigation() {
   const location = useLocation();
   const isHomePage = location.pathname === "/";
+  const isAdminPage = location.pathname === "/admin";
+  
+  // Don't render navigation on admin page
+  if (isAdminPage) {
+    return null;
+  }
   
   return (
     <>
@@ -52,7 +71,7 @@ function Navigation() {
       
       {/* Main Navigation Header */}
       <nav 
-        className={`transition-all duration-300 sticky top-0 z-50 ${
+        className={`transition-all duration-300 sticky top-20 z-50 ${
           isHomePage 
             ? "bg-transparent" 
             : "bg-white shadow-lg border-b border-gray-200"
@@ -127,16 +146,6 @@ function Navigation() {
                 GENERAL INFO
               </a>
               <a
-                href="/request"
-                className={`px-3 py-2 text-sm font-medium transition-colors duration-200 ${
-                  isHomePage 
-                    ? "text-white hover:text-gray-200" 
-                    : "text-gray-700 hover:text-primary-600"
-                }`}
-              >
-                REQUEST QUOTE
-              </a>
-              <a
                 href="/contact"
                 className={`px-3 py-2 text-sm font-medium transition-colors duration-200 ${
                   isHomePage 
@@ -145,6 +154,12 @@ function Navigation() {
                 }`}
               >
                 CONTACT US
+              </a>
+              <a
+                href="/request"
+                className="ml-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors duration-200 shadow-md hover:shadow-lg"
+              >
+                REQUEST QUOTE
               </a>
             </div>
             {/* Mobile menu button */}
@@ -181,6 +196,14 @@ function Navigation() {
 }
 
 function Footer() {
+  const location = useLocation();
+  const isAdminPage = location.pathname === "/admin";
+  
+  // Don't render footer on admin page
+  if (isAdminPage) {
+    return null;
+  }
+  
   return (
     <footer className="section-dark">
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
@@ -238,7 +261,7 @@ function Footer() {
               <li>
                 <a
                   href="/request"
-                  className="text-gray-300 hover:text-white transition-colors duration-200"
+                  className="inline-block bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors duration-200 shadow-md hover:shadow-lg mt-2"
                 >
                   Request Quote
                 </a>
@@ -273,6 +296,8 @@ function Footer() {
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const { googleMapsApiKey } = useLoaderData<typeof loader>();
+  
   return (
     <html lang="en">
       <head>
@@ -280,6 +305,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+        {googleMapsApiKey && (
+          <script
+            src={`https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&libraries=places`}
+            async
+            defer
+          />
+        )}
       </head>
       <body className="min-h-screen flex flex-col">
         <Navigation />
@@ -290,11 +322,25 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              // Only apply scroll behavior on home page
-              if (window.location.pathname === '/') {
-                window.addEventListener('scroll', function() {
-                  const nav = document.getElementById('main-nav');
-                  const navLinks = document.getElementById('nav-links');
+              // Header positioning and scroll behavior
+              window.addEventListener('scroll', function() {
+                const nav = document.getElementById('main-nav');
+                const navLinks = document.getElementById('nav-links');
+                const isHomePage = window.location.pathname === '/';
+                
+                // Handle header positioning for all pages
+                if (window.scrollY > 0) {
+                  // When scrolling, use fixed positioning at top-0
+                  nav.classList.remove('sticky', 'top-20');
+                  nav.classList.add('fixed', 'top-0', 'left-0', 'right-0');
+                } else {
+                  // When at top, use sticky positioning at top-20
+                  nav.classList.remove('fixed', 'top-0', 'left-0', 'right-0');
+                  nav.classList.add('sticky', 'top-20');
+                }
+                
+                // Only apply background changes on home page
+                if (isHomePage) {
                   const heroSection = document.querySelector('section');
                   const heroHeight = heroSection ? heroSection.offsetHeight : 0;
                   
@@ -304,12 +350,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     nav.classList.add('bg-white', 'shadow-lg', 'border-b', 'border-gray-200');
                     nav.classList.remove('bg-transparent');
                     
-                    // Change nav links to dark text
+                    // Change nav links to dark text (exclude REQUEST QUOTE button)
                     if (navLinks) {
                       const links = navLinks.querySelectorAll('a');
                       links.forEach(link => {
-                        link.classList.remove('text-white', 'hover:text-gray-200');
-                        link.classList.add('text-gray-700', 'hover:text-primary-600');
+                        // Skip the REQUEST QUOTE button to keep it white
+                        if (!link.textContent?.includes('REQUEST QUOTE')) {
+                          link.classList.remove('text-white', 'hover:text-gray-200');
+                          link.classList.add('text-gray-700', 'hover:text-primary-600');
+                        }
                       });
                     }
                   } else {
@@ -317,17 +366,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     nav.classList.remove('bg-white', 'shadow-lg', 'border-b', 'border-gray-200');
                     nav.classList.add('bg-transparent');
                     
-                    // Change nav links to white text
+                    // Change nav links to white text (exclude REQUEST QUOTE button)
                     if (navLinks) {
                       const links = navLinks.querySelectorAll('a');
                       links.forEach(link => {
-                        link.classList.remove('text-gray-700', 'hover:text-primary-600');
-                        link.classList.add('text-white', 'hover:text-gray-200');
+                        // Skip the REQUEST QUOTE button to keep it white
+                        if (!link.textContent?.includes('REQUEST QUOTE')) {
+                          link.classList.remove('text-gray-700', 'hover:text-primary-600');
+                          link.classList.add('text-white', 'hover:text-gray-200');
+                        }
                       });
                     }
                   }
-                });
-              }
+                }
+              });
             `,
           }}
         />

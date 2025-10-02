@@ -2,6 +2,7 @@ import type { MetaFunction, ActionFunctionArgs } from "@remix-run/node";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
 import { saveSubmission } from "~/lib/storage";
+import { InteractiveMap } from "~/components/InteractiveMap";
 
 export const meta: MetaFunction = () => {
   return [
@@ -72,18 +73,28 @@ export default function Contact() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary-50 to-primary-100 py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative py-20 overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <img
+            src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80"
+            alt="Completed well installation with clean water"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/70"></div>
+        </div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-              Get in <span className="text-primary-600">Touch</span>
+            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
+              Get in <span className="text-primary-400">Touch</span>
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+            <p className="text-xl text-gray-200 max-w-3xl mx-auto mb-8">
               Need well drilling services? We&apos;d love to hear from you
               and discuss how we can help with your residential water well needs.
             </p>
             {/* Prominent Phone Number */}
-            <div className="bg-white rounded-lg shadow-lg p-6 max-w-md mx-auto border-l-4 border-accent-800">
+            <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-6 max-w-md mx-auto border-l-4 border-accent-800">
               <div className="flex items-center justify-center space-x-4">
                 <div className="w-12 h-12 bg-accent-100 rounded-full flex items-center justify-center">
                   <svg className="w-6 h-6 text-accent-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -114,15 +125,18 @@ export default function Contact() {
               
               {/* Success Message */}
               {actionData && 'success' in actionData && actionData.success && (
-                <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                  <div className="flex">
+                <div className="mb-8 p-8 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300 rounded-xl shadow-lg" id="success-message">
+                  <div className="flex items-center justify-center">
                     <div className="flex-shrink-0">
-                      <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                      </svg>
+                      <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
+                        <svg className="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                      </div>
                     </div>
-                    <div className="ml-3">
-                      <p className="text-sm font-medium text-green-800">
+                    <div className="ml-4 text-center">
+                      <h3 className="text-2xl font-bold text-green-800 mb-2">Message Sent Successfully!</h3>
+                      <p className="text-lg text-green-700">
                         Thank you! Your message has been sent successfully. We'll get back to you soon.
                       </p>
                     </div>
@@ -316,34 +330,6 @@ export default function Contact() {
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <svg
-                      className="w-6 h-6 text-primary-600"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                      />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                      Email
-                    </h3>
-                    <a
-                      href="mailto:info@stokeswaterwell.com"
-                      className="text-primary-600 hover:text-primary-700 transition-colors duration-200"
-                    >
-                      info@stokeswaterwell.com
-                    </a>
-                  </div>
-                </div>
 
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
@@ -405,32 +391,12 @@ export default function Contact() {
                 </div>
               </div>
 
-              {/* Map Placeholder */}
+              {/* Interactive Map */}
               <div className="mt-12">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
                   Find Us
                 </h3>
-                <div className="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center">
-                  <div className="text-center">
-                    <svg
-                      className="w-16 h-16 text-gray-400 mx-auto mb-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={1}
-                        d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3"
-                      />
-                    </svg>
-                    <p className="text-gray-500">Interactive Map</p>
-                    <p className="text-sm text-gray-400">
-                      Add your map integration here
-                    </p>
-                  </div>
-                </div>
+                <InteractiveMap className="w-full h-64" />
               </div>
             </div>
           </div>
@@ -492,6 +458,73 @@ export default function Contact() {
           </div>
         </div>
       </section>
+      <PhoneFormattingScript />
     </div>
+  );
+}
+
+// Phone number formatting script
+export function PhoneFormattingScript() {
+  return (
+    <script
+      dangerouslySetInnerHTML={{
+        __html: `
+          // Phone number formatting function
+          function formatPhoneNumber(value) {
+            // Remove all non-numeric characters
+            const phoneNumber = value.replace(/[^\\d]/g, '');
+            
+            // Format as (XXX) XXX-XXXX
+            if (phoneNumber.length >= 6) {
+              return '(' + phoneNumber.slice(0, 3) + ') ' + phoneNumber.slice(3, 6) + '-' + phoneNumber.slice(6, 10);
+            } else if (phoneNumber.length >= 3) {
+              return '(' + phoneNumber.slice(0, 3) + ') ' + phoneNumber.slice(3);
+            } else if (phoneNumber.length > 0) {
+              return '(' + phoneNumber;
+            }
+            return phoneNumber;
+          }
+          
+          // Apply formatting to phone inputs
+          document.addEventListener('DOMContentLoaded', function() {
+            const phoneInputs = document.querySelectorAll('input[type="tel"]');
+            phoneInputs.forEach(function(input) {
+              input.addEventListener('input', function(e) {
+                const oldValue = e.target.value;
+                const oldCursorPosition = e.target.selectionStart;
+                
+                // Count digits before cursor position
+                const digitsBeforeCursor = oldValue.substring(0, oldCursorPosition).replace(/[^\\d]/g, '').length;
+                
+                const formattedValue = formatPhoneNumber(oldValue);
+                e.target.value = formattedValue;
+                
+                // Find new cursor position based on digit count
+                let newCursorPosition = formattedValue.length; // Default to end
+                let digitCount = 0;
+                
+                for (let i = 0; i < formattedValue.length; i++) {
+                  if (/\\d/.test(formattedValue[i])) {
+                    digitCount++;
+                    if (digitCount === digitsBeforeCursor) {
+                      newCursorPosition = i + 1;
+                      break;
+                    }
+                  }
+                }
+                
+                // If we've typed all 10 digits, put cursor at the end
+                if (digitsBeforeCursor >= 10) {
+                  newCursorPosition = formattedValue.length;
+                }
+                
+                // Set cursor position
+                e.target.setSelectionRange(newCursorPosition, newCursorPosition);
+              });
+            });
+          });
+        `,
+      }}
+    />
   );
 }

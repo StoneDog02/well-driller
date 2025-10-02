@@ -1,7 +1,9 @@
-import type { MetaFunction, ActionFunctionArgs } from "@remix-run/node";
-import { Form, useActionData, useNavigation } from "@remix-run/react";
+import type { MetaFunction, ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { Form, useActionData, useNavigation, useLoaderData } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
 import { saveSubmission } from "~/lib/storage";
+import { GoogleReviews, ReviewSummary } from "~/components/GoogleReviews";
+import { formatReviewText, getInitials } from "~/lib/google-reviews";
 
 export const meta: MetaFunction = () => {
   return [
@@ -12,6 +14,14 @@ export const meta: MetaFunction = () => {
     },
   ];
 };
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  // Fetch Google reviews data
+  const reviewsResponse = await fetch(`${new URL(request.url).origin}/api/reviews`);
+  const reviewsData = await reviewsResponse.json();
+  
+  return json({ reviewsData });
+}
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
@@ -61,6 +71,20 @@ export default function Index() {
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
+  const loaderData = useLoaderData<typeof loader>();
+
+  // Get a different review for the testimonial (4th review to avoid duplication with main reviews section)
+  const testimonialReview = loaderData.reviewsData?.success && loaderData.reviewsData?.reviews?.length > 3 
+    ? loaderData.reviewsData.reviews[3] 
+    : null;
+
+  // Fallback testimonial if no real reviews available
+  const fallbackTestimonial = {
+    author_name: "Sarah",
+    text: "Stokes Drilling did an amazing job installing my new well. I was pleased with their professionalism and experience. Highly recommended!",
+    rating: 5,
+    relative_time_description: "2 months ago"
+  };
 
   return (
     <div className="min-h-screen">
@@ -145,15 +169,18 @@ export default function Index() {
                 
                 {/* Success Message */}
                 {actionData && 'success' in actionData && actionData.success && (
-                  <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                    <div className="flex">
+                  <div className="mb-8 p-8 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300 rounded-xl shadow-lg" id="success-message">
+                    <div className="flex items-center justify-center">
                       <div className="flex-shrink-0">
-                        <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                        </svg>
+                        <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
+                          <svg className="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                          </svg>
+                        </div>
                       </div>
-                      <div className="ml-3">
-                        <p className="text-sm font-medium text-green-800">
+                      <div className="ml-4 text-center">
+                        <h3 className="text-2xl font-bold text-green-800 mb-2">Callback Requested!</h3>
+                        <p className="text-lg text-green-700">
                           Thank you! We'll call you back soon.
                         </p>
                       </div>
@@ -247,28 +274,185 @@ export default function Index() {
         {/* Bottom Wave Transition */}
       </section>
 
-      {/* Services Overview Section */}
-      <section className="py-20 bg-gray-50">
+      {/* Why Choose Stokes Drilling Section */}
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Professional Well Drilling Services
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-16">
+              Why Choose Stokes Drilling?
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-              Comprehensive residential well solutions delivered with expertise, reliability, and exceptional customer service.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left Column - Bullet Points */}
+            <div className="space-y-8">
+              {/* Local Garland Experts */}
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-primary-600 rounded-full flex items-center justify-center">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-primary-600 mb-3">
+                    Local Garland, Utah Experts
+                  </h3>
+                  <p className="text-gray-700 leading-relaxed">
+                    Stokes Drilling is a well-established well drilling contractor located in Garland, Utah. We are recognized for our reliability and commitment to serving the local community with high-quality drilling services. With 10+ years of experience and 200+ wells drilled, we have built a reputation for providing essential water well solutions to our clients.
+                  </p>
+                </div>
+              </div>
+
+              {/* Licensed Professional Team */}
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-primary-600 rounded-full flex items-center justify-center">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-primary-600 mb-3">
+                    Licensed Professional Team
+                  </h3>
+                  <p className="text-gray-700 leading-relaxed">
+                    Led by Zachary Larsen, our Owner & Lead Driller, we have a team of licensed well drilling professionals committed to delivering exceptional results. Our experienced technicians specialize in well repairs, pump installation, and water system maintenance, ensuring your family has the clean, reliable water they need for years to come.
+                  </p>
+                </div>
+              </div>
+
+              {/* Quality & Reliability */}
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-primary-600 rounded-full flex items-center justify-center">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-primary-600 mb-3">
+                    Quality, Reliability & Integrity
+                  </h3>
+                  <p className="text-gray-700 leading-relaxed">
+                    We conduct business with honesty and transparency, providing fair pricing and honest assessments. With 24/7 emergency service availability, we strive for excellence in every well drilling project, ensuring the highest quality standards and attention to detail in all our work.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column - Logo with Elevated Review */}
+            <div className="relative">
+              {/* Full Logo Container */}
+              <div className="relative w-full h-80 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg border-4 border-red-600 overflow-hidden shadow-xl">
+                {/* Logo Image */}
+                <div className="absolute inset-0 flex items-center justify-center p-8">
+                  <img 
+                    src="/StokesDrillingLogo.png" 
+                    alt="Stokes Drilling" 
+                    className="max-w-full max-h-full object-contain"
+                  />
+                </div>
+              </div>
+              
+              {/* Elevated Review Box - Positioned in corner */}
+              <div className="absolute -bottom-36 -right-24 bg-white rounded-lg shadow-2xl p-6 border-l-4 border-red-600 w-72 z-10 transform hover:scale-105 transition-transform duration-200">
+                {/* Speech Bubble Icon */}
+                <div className="absolute -top-3 -left-3 w-6 h-6 bg-red-600 rounded-full flex items-center justify-center">
+                  <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                
+                {/* Star Rating */}
+                {testimonialReview && (
+                  <div className="flex text-yellow-400 mb-3">
+                    {[...Array(5)].map((_, i) => (
+                      <svg 
+                        key={i} 
+                        className={`w-4 h-4 ${i < testimonialReview.rating ? 'fill-current' : 'fill-gray-300'}`} 
+                        viewBox="0 0 20 20"
+                      >
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    ))}
+                  </div>
+                )}
+                
+                {/* Review Text */}
+                <blockquote className="text-gray-700 italic mb-4 leading-relaxed text-sm">
+                  "{testimonialReview ? formatReviewText(testimonialReview.text, 120) : fallbackTestimonial.text}"
+                </blockquote>
+                
+                {/* Reviewer Info */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mr-3">
+                      <span className="text-red-600 font-semibold text-xs">
+                        {testimonialReview ? getInitials(testimonialReview.author_name) : getInitials(fallbackTestimonial.author_name)}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900 text-sm">
+                        {testimonialReview ? testimonialReview.author_name : fallbackTestimonial.author_name}
+                      </p>
+                      <p className="text-xs text-gray-600">
+                        {testimonialReview ? testimonialReview.relative_time_description : fallbackTestimonial.relative_time_description}
+                      </p>
+                    </div>
+                  </div>
+                  {testimonialReview && (
+                    <div className="text-right">
+                      <div className="text-xs text-gray-500">Google Review</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Services Overview Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-16">
+              Some Of Our Services
+            </h2>
+            
+            {/* Service Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+              {/* New Well Drilling Card */}
+              <div className="bg-white rounded-lg shadow-lg p-8 text-center hover:shadow-xl transition-shadow duration-300">
+                <div className="w-20 h-20 mx-auto mb-6 flex items-center justify-center">
+                  <i className="fa-solid fa-bore-hole text-6xl text-primary-600"></i>
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900">New Well Drilling</h3>
+              </div>
+
+              {/* Well Repairs Card */}
+              <div className="bg-white rounded-lg shadow-lg p-8 text-center hover:shadow-xl transition-shadow duration-300">
+                <div className="w-20 h-20 mx-auto mb-6 flex items-center justify-center">
+                  <i className="fa-solid fa-screwdriver-wrench text-6xl text-primary-600"></i>
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900">Well Repairs</h3>
+              </div>
+
+              {/* Water Testing Card */}
+              <div className="bg-white rounded-lg shadow-lg p-8 text-center hover:shadow-xl transition-shadow duration-300">
+                <div className="w-20 h-20 mx-auto mb-6 flex items-center justify-center">
+                  <i className="fa-solid fa-microscope text-6xl text-primary-600"></i>
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900">Water Testing</h3>
+              </div>
+            </div>
+
+            {/* Explore All Services Button */}
+            <div className="text-center">
               <a
                 href="/services"
-                className="bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 inline-block shadow-lg hover:shadow-xl"
+                className="bg-primary-600 hover:bg-primary-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition-colors duration-200 inline-block shadow-lg hover:shadow-xl"
               >
-                View All Services
-              </a>
-              <a
-                href="/contact"
-                className="bg-transparent border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 inline-block"
-              >
-                Get Free Quote
+                EXPLORE ALL OF OUR SERVICES
               </a>
             </div>
           </div>
@@ -282,78 +466,12 @@ export default function Index() {
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Trusted by Homeowners
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
               Read what our satisfied customers have to say about our professional well drilling services.
             </p>
+            <ReviewSummary reviewsData={loaderData.reviewsData} />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-gray-50 rounded-lg p-8 border-l-4 border-primary-600">
-              <div className="flex items-center mb-6">
-                <div className="flex text-yellow-400">
-                  {[...Array(5)].map((_, i) => (
-                    <svg key={i} className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
-                </div>
-              </div>
-              <blockquote className="text-gray-700 mb-6 italic">
-                "Excellent service! They drilled our new well quickly and professionally. 
-                The water quality is perfect and the price was fair. Highly recommend!"
-              </blockquote>
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-gray-300 rounded-full mr-3"></div>
-                <div>
-                  <div className="font-semibold text-gray-900">Sarah M.</div>
-                  <div className="text-sm text-gray-600">Homeowner</div>
-                </div>
-              </div>
-            </div>
-            <div className="bg-gray-50 rounded-lg p-8 border-l-4 border-primary-600">
-              <div className="flex items-center mb-6">
-                <div className="flex text-yellow-400">
-                  {[...Array(5)].map((_, i) => (
-                    <svg key={i} className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
-                </div>
-              </div>
-              <blockquote className="text-gray-700 mb-6 italic">
-                "When our well pump failed, they came out the same day and had us 
-                back up and running quickly. Great emergency service!"
-              </blockquote>
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-gray-300 rounded-full mr-3"></div>
-                <div>
-                  <div className="font-semibold text-gray-900">Mike R.</div>
-                  <div className="text-sm text-gray-600">Property Owner</div>
-                </div>
-              </div>
-            </div>
-            <div className="bg-gray-50 rounded-lg p-8 border-l-4 border-primary-600">
-              <div className="flex items-center mb-6">
-                <div className="flex text-yellow-400">
-                  {[...Array(5)].map((_, i) => (
-                    <svg key={i} className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
-                </div>
-              </div>
-              <blockquote className="text-gray-700 mb-6 italic">
-                "Professional, honest, and fair pricing. They explained everything 
-                clearly and delivered exactly what they promised."
-              </blockquote>
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-gray-300 rounded-full mr-3"></div>
-                <div>
-                  <div className="font-semibold text-gray-900">Jennifer L.</div>
-                  <div className="text-sm text-gray-600">Customer</div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <GoogleReviews maxReviews={3} reviewsData={loaderData.reviewsData} />
         </div>
       </section>
 
@@ -416,6 +534,84 @@ export default function Index() {
           </div>
         </div>
       </section>
+      <PhoneFormattingScript />
     </div>
+  );
+}
+
+// Phone number formatting script
+export function PhoneFormattingScript() {
+  return (
+    <script
+      dangerouslySetInnerHTML={{
+        __html: `
+          // Phone number formatting function
+          function formatPhoneNumber(value) {
+            // Remove all non-numeric characters
+            const phoneNumber = value.replace(/[^\\d]/g, '');
+            
+            // Format as (XXX) XXX-XXXX
+            if (phoneNumber.length >= 6) {
+              return '(' + phoneNumber.slice(0, 3) + ') ' + phoneNumber.slice(3, 6) + '-' + phoneNumber.slice(6, 10);
+            } else if (phoneNumber.length >= 3) {
+              return '(' + phoneNumber.slice(0, 3) + ') ' + phoneNumber.slice(3);
+            } else if (phoneNumber.length > 0) {
+              return '(' + phoneNumber;
+            }
+            return phoneNumber;
+          }
+          
+          // Apply formatting to phone inputs
+          document.addEventListener('DOMContentLoaded', function() {
+            const phoneInputs = document.querySelectorAll('input[type="tel"]');
+            phoneInputs.forEach(function(input) {
+              input.addEventListener('input', function(e) {
+                const oldValue = e.target.value;
+                const oldCursorPosition = e.target.selectionStart;
+                
+                // Count digits before cursor position
+                const digitsBeforeCursor = oldValue.substring(0, oldCursorPosition).replace(/[^\\d]/g, '').length;
+                
+                const formattedValue = formatPhoneNumber(oldValue);
+                e.target.value = formattedValue;
+                
+                // Find new cursor position based on digit count
+                let newCursorPosition = formattedValue.length; // Default to end
+                let digitCount = 0;
+                
+                for (let i = 0; i < formattedValue.length; i++) {
+                  if (/\\d/.test(formattedValue[i])) {
+                    digitCount++;
+                    if (digitCount === digitsBeforeCursor) {
+                      newCursorPosition = i + 1;
+                      break;
+                    }
+                  }
+                }
+                
+                // If we've typed all 10 digits, put cursor at the end
+                if (digitsBeforeCursor >= 10) {
+                  newCursorPosition = formattedValue.length;
+                }
+                
+                // Set cursor position
+                e.target.setSelectionRange(newCursorPosition, newCursorPosition);
+              });
+            });
+            
+            // Auto-scroll to success message if it exists
+            const successMessage = document.getElementById('success-message');
+            if (successMessage) {
+              setTimeout(function() {
+                successMessage.scrollIntoView({ 
+                  behavior: 'smooth', 
+                  block: 'start' 
+                });
+              }, 100);
+            }
+          });
+        `,
+      }}
+    />
   );
 }

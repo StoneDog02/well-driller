@@ -109,13 +109,23 @@ export default function Request() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary-50 to-primary-100 py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative py-20 overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <img
+            src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80"
+            alt="Professional well drilling equipment"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/70"></div>
+        </div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-              Request a <span className="text-primary-600">Quote</span>
+            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
+              Request a <span className="text-primary-400">Quote</span>
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+            <p className="text-xl text-gray-200 max-w-3xl mx-auto mb-8">
               Get a detailed estimate for your well drilling project. Fill out the form below 
               and we'll provide you with a comprehensive quote tailored to your needs.
             </p>
@@ -133,16 +143,18 @@ export default function Request() {
             
             {/* Success Message */}
             {actionData && 'success' in actionData && actionData.success && (
-              <div className="mb-8 p-6 bg-green-50 border border-green-200 rounded-lg">
-                <div className="flex">
+              <div className="mb-8 p-8 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300 rounded-xl shadow-lg" id="success-message">
+                <div className="flex items-center justify-center">
                   <div className="flex-shrink-0">
-                    <svg className="h-6 w-6 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
+                    <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
+                      <svg className="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                    </div>
                   </div>
-                  <div className="ml-3">
-                    <h3 className="text-lg font-medium text-green-800">Request Submitted Successfully!</h3>
-                    <p className="text-sm text-green-700 mt-1">
+                  <div className="ml-4 text-center">
+                    <h3 className="text-2xl font-bold text-green-800 mb-2">Request Submitted Successfully!</h3>
+                    <p className="text-lg text-green-700">
                       Thank you for your request. We'll review your information and get back to you with a detailed quote within 24-48 hours.
                     </p>
                   </div>
@@ -600,6 +612,84 @@ export default function Request() {
           </div>
         </div>
       </section>
+      <PhoneFormattingScript />
     </div>
+  );
+}
+
+// Phone number formatting script
+export function PhoneFormattingScript() {
+  return (
+    <script
+      dangerouslySetInnerHTML={{
+        __html: `
+          // Phone number formatting function
+          function formatPhoneNumber(value) {
+            // Remove all non-numeric characters
+            const phoneNumber = value.replace(/[^\\d]/g, '');
+            
+            // Format as (XXX) XXX-XXXX
+            if (phoneNumber.length >= 6) {
+              return '(' + phoneNumber.slice(0, 3) + ') ' + phoneNumber.slice(3, 6) + '-' + phoneNumber.slice(6, 10);
+            } else if (phoneNumber.length >= 3) {
+              return '(' + phoneNumber.slice(0, 3) + ') ' + phoneNumber.slice(3);
+            } else if (phoneNumber.length > 0) {
+              return '(' + phoneNumber;
+            }
+            return phoneNumber;
+          }
+          
+          // Apply formatting to phone inputs
+          document.addEventListener('DOMContentLoaded', function() {
+            const phoneInputs = document.querySelectorAll('input[type="tel"]');
+            phoneInputs.forEach(function(input) {
+              input.addEventListener('input', function(e) {
+                const oldValue = e.target.value;
+                const oldCursorPosition = e.target.selectionStart;
+                
+                // Count digits before cursor position
+                const digitsBeforeCursor = oldValue.substring(0, oldCursorPosition).replace(/[^\\d]/g, '').length;
+                
+                const formattedValue = formatPhoneNumber(oldValue);
+                e.target.value = formattedValue;
+                
+                // Find new cursor position based on digit count
+                let newCursorPosition = formattedValue.length; // Default to end
+                let digitCount = 0;
+                
+                for (let i = 0; i < formattedValue.length; i++) {
+                  if (/\\d/.test(formattedValue[i])) {
+                    digitCount++;
+                    if (digitCount === digitsBeforeCursor) {
+                      newCursorPosition = i + 1;
+                      break;
+                    }
+                  }
+                }
+                
+                // If we've typed all 10 digits, put cursor at the end
+                if (digitsBeforeCursor >= 10) {
+                  newCursorPosition = formattedValue.length;
+                }
+                
+                // Set cursor position
+                e.target.setSelectionRange(newCursorPosition, newCursorPosition);
+              });
+            });
+            
+            // Auto-scroll to success message if it exists
+            const successMessage = document.getElementById('success-message');
+            if (successMessage) {
+              setTimeout(function() {
+                successMessage.scrollIntoView({ 
+                  behavior: 'smooth', 
+                  block: 'start' 
+                });
+              }, 100);
+            }
+          });
+        `,
+      }}
+    />
   );
 }

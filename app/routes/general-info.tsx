@@ -1,4 +1,5 @@
 import type { MetaFunction } from "@remix-run/node";
+import { InteractiveMap } from "~/components/InteractiveMap";
 
 export const meta: MetaFunction = () => {
   return [
@@ -61,17 +62,8 @@ export default function GeneralInfo() {
               </div>
             </div>
             <div className="card">
-              <div className="aspect-w-16 aspect-h-9 bg-gray-100 rounded-lg flex items-center justify-center">
-                <div className="text-center">
-                  <svg className="w-24 h-24 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  <p className="text-gray-500">Service Area Map</p>
-                  <p className="text-sm text-gray-400">
-                    Interactive map coming soon
-                  </p>
-                </div>
+              <div className="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden">
+                <InteractiveMap className="w-full h-full" />
               </div>
             </div>
           </div>
@@ -90,35 +82,53 @@ export default function GeneralInfo() {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="card">
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                Residential Well Drilling
-              </h3>
-              <p className="text-gray-600 mb-4">
-                We specialize in drilling new residential water wells for homeowners. 
-                Our experienced team uses state-of-the-art equipment to ensure quality results.
-              </p>
-              <ul className="text-gray-600 space-y-2">
-                <li>• Site assessment and planning</li>
-                <li>• Professional drilling services</li>
-                <li>• Well casing installation</li>
-                <li>• Water quality testing</li>
-              </ul>
+            <div className="card overflow-hidden">
+              <div className="aspect-w-16 aspect-h-12 bg-gray-200">
+                <img
+                  src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
+                  alt="Residential well drilling equipment"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="p-6">
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                  Residential Well Drilling
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  We specialize in drilling new residential water wells for homeowners. 
+                  Our experienced team uses state-of-the-art equipment to ensure quality results.
+                </p>
+                <ul className="text-gray-600 space-y-2">
+                  <li>• Site assessment and planning</li>
+                  <li>• Professional drilling services</li>
+                  <li>• Well casing installation</li>
+                  <li>• Water quality testing</li>
+                </ul>
+              </div>
             </div>
-            <div className="card">
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                Well Maintenance & Repairs
-              </h3>
-              <p className="text-gray-600 mb-4">
-                Keep your existing well running smoothly with our maintenance and repair services. 
-                We diagnose problems quickly and provide lasting solutions.
-              </p>
-              <ul className="text-gray-600 space-y-2">
-                <li>• Pump installation and repair</li>
-                <li>• Well casing repairs</li>
-                <li>• Water pressure issues</li>
-                <li>• Emergency service calls</li>
-              </ul>
+            <div className="card overflow-hidden">
+              <div className="aspect-w-16 aspect-h-12 bg-gray-200">
+                <img
+                  src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
+                  alt="Well maintenance and repair work"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="p-6">
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                  Well Maintenance & Repairs
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  Keep your existing well running smoothly with our maintenance and repair services. 
+                  We diagnose problems quickly and provide lasting solutions.
+                </p>
+                <ul className="text-gray-600 space-y-2">
+                  <li>• Pump installation and repair</li>
+                  <li>• Well casing repairs</li>
+                  <li>• Water pressure issues</li>
+                  <li>• Emergency service calls</li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
