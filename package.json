@@ -19,7 +19,6 @@
   },
   "dependencies": {
     "@netlify/remix-adapter": "^2.6.1",
-    "@netlify/remix-edge-adapter": "^3.4.3",
     "@remix-run/node": "*",
     "@remix-run/react": "*",
     "@remix-run/serve": "*",
