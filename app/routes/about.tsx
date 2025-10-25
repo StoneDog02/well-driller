@@ -27,9 +27,9 @@ export default function About() {
             </p>
             <div className="mt-8 bg-white rounded-lg shadow-lg p-6 max-w-2xl mx-auto border-l-4 border-primary-600">
               <div className="text-center">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Located in Garland, Utah</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Serving Northern Utah & Southern Idaho</h3>
                 <p className="text-gray-700">
-                  Serving Garland, UT and the surrounding communities
+                  Proudly serving communities across Northern Utah and Southern Idaho
                 </p>
               </div>
             </div>
@@ -46,9 +46,9 @@ export default function About() {
                 Our Mission
               </h2>
               <p className="text-lg text-gray-700 mb-6 leading-relaxed">
-                Stokes Drilling is a well-established well drilling contractor located in Garland, Utah. 
+                Stokes Drilling is a well-established well drilling contractor serving Northern Utah and Southern Idaho. 
                 We are recognized for our reliability and commitment to serving the local community 
-                with high-quality drilling services. With our base in the heart of Garland, we have 
+                with high-quality drilling services. With our extensive regional presence, we have 
                 built a reputation for providing essential water well solutions to our clients.
               </p>
               <p className="text-lg text-gray-700 mb-6 leading-relaxed">
@@ -61,13 +61,13 @@ export default function About() {
               <div className="flex flex-col sm:flex-row gap-6">
                 <div className="text-center sm:text-left">
                                 <div className="text-3xl font-bold text-accent-800 mb-2">
-                10+
+                50+
               </div>
                   <div className="text-gray-600">Years of Experience</div>
                 </div>
                 <div className="text-center sm:text-left">
                                 <div className="text-3xl font-bold text-accent-800 mb-2">
-                200+
+                Countless
               </div>
                   <div className="text-gray-600">Wells Drilled</div>
                 </div>
@@ -213,7 +213,7 @@ export default function About() {
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
                 Zachary Larsen
               </h3>
-              <p className="text-accent-800 mb-2">Owner & Lead Driller</p>
+              <p className="text-accent-800 mb-2">Lead Driller</p>
               <p className="text-gray-600">
                 Licensed well drilling professional spearheading Stokes Drilling's operations 
                 and customer service with extensive knowledge in residential well drilling 
@@ -262,7 +262,7 @@ export default function About() {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Customer Service
+                Ferron Stokes
               </h3>
               <p className="text-accent-800 mb-2">Project Coordinator</p>
               <p className="text-gray-600">
