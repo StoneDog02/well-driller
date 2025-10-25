@@ -3,6 +3,33 @@ import { json, redirect } from "@remix-run/node";
 import { useLoaderData, Form, useActionData, useNavigation } from "@remix-run/react";
 import { useState, useMemo } from "react";
 import { loadSubmissions, deleteSubmission, updateContactedStatus, updateReferredStatus, FormSubmission } from "~/lib/storage";
+import { createCookie } from "@remix-run/node";
+
+// Create secure admin cookie
+const adminCookie = createCookie("admin-auth", {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "lax",
+  maxAge: 60 * 60 * 24, // 24 hours
+  secrets: [process.env.ADMIN_SECRET || "stokes-admin-secret-key-2024"],
+});
+
+// Hash function for password verification
+async function hashPassword(password: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Verify admin password
+async function verifyPassword(password: string): Promise<boolean> {
+  // Hash of "stokes2024" - in production, store this securely
+  const correctHash = "2200dee7892e1cde55d9ec32c52730c1a9fafd3efee8e949c71ef69597585916";
+  const inputHash = await hashPassword(password);
+  return inputHash === correctHash;
+}
 
 export const meta: MetaFunction = () => {
   return [
@@ -12,11 +39,11 @@ export const meta: MetaFunction = () => {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  // Simple password protection - in production, use proper authentication
-  const url = new URL(request.url);
-  const password = url.searchParams.get('password');
+  // Check for admin session cookie
+  const cookieHeader = request.headers.get('Cookie');
+  const isAuthenticated = cookieHeader?.includes('admin-authenticated=true');
   
-  if (password !== 'stokes2024') {
+  if (!isAuthenticated) {
     return json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -27,12 +54,38 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const action = formData.get('action') as string;
+  
+  // Handle login
+  if (action === 'login') {
+    const password = formData.get('password') as string;
+    const isValid = await verifyPassword(password);
+    
+    if (isValid) {
+      const cookie = await adminCookie.serialize('admin-authenticated=true');
+      return redirect('/admin', {
+        headers: {
+          'Set-Cookie': cookie,
+        },
+      });
+    } else {
+      return json({ error: 'Invalid password' }, { status: 401 });
+    }
+  }
+  
+  // Check authentication for other actions
+  const cookieHeader = request.headers.get('Cookie');
+  const isAuthenticated = cookieHeader?.includes('admin-authenticated=true');
+  
+  if (!isAuthenticated) {
+    return json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  
   const id = formData.get('id') as string;
 
   if (action === 'delete' && id) {
     const success = await deleteSubmission(id);
     if (success) {
-      return redirect('/admin?password=stokes2024');
+      return redirect('/admin');
     } else {
       return json({ error: 'Failed to delete submission' }, { status: 400 });
     }
@@ -42,7 +95,7 @@ export async function action({ request }: ActionFunctionArgs) {
     const contacted = formData.get('contacted') === 'true';
     const success = await updateContactedStatus(id, contacted);
     if (success) {
-      return redirect('/admin?password=stokes2024');
+      return redirect('/admin');
     } else {
       return json({ error: 'Failed to update contacted status' }, { status: 400 });
     }
@@ -52,7 +105,7 @@ export async function action({ request }: ActionFunctionArgs) {
     const referred = formData.get('referred') === 'true';
     const success = await updateReferredStatus(id, referred);
     if (success) {
-      return redirect('/admin?password=stokes2024');
+      return redirect('/admin');
     } else {
       return json({ error: 'Failed to update referred status' }, { status: 400 });
     }
@@ -152,7 +205,7 @@ export default function Admin() {
         <div className="max-w-md w-full bg-white rounded-lg shadow-md p-6">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Admin Access</h1>
           <p className="text-gray-600 mb-4">Please enter the admin password:</p>
-          <Form method="get" className="space-y-4">
+          <Form method="post" className="space-y-4">
             <input
               type="password"
               name="password"
@@ -160,6 +213,7 @@ export default function Admin() {
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               required
             />
+            <input type="hidden" name="action" value="login" />
             <button
               type="submit"
               className="w-full btn-primary py-3"
