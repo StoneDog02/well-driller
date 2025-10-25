@@ -2,7 +2,7 @@ import type { MetaFunction, LoaderFunctionArgs, ActionFunctionArgs } from "@remi
 import { json, redirect } from "@remix-run/node";
 import { useLoaderData, Form, useActionData, useNavigation } from "@remix-run/react";
 import { useState, useMemo } from "react";
-import { loadSubmissions, deleteSubmission, updateContactedStatus, FormSubmission } from "~/lib/storage";
+import { loadSubmissions, deleteSubmission, updateContactedStatus, updateReferredStatus, FormSubmission } from "~/lib/storage";
 
 export const meta: MetaFunction = () => {
   return [
@@ -45,6 +45,16 @@ export async function action({ request }: ActionFunctionArgs) {
       return redirect('/admin?password=stokes2024');
     } else {
       return json({ error: 'Failed to update contacted status' }, { status: 400 });
+    }
+  }
+
+  if (action === 'toggle-referred' && id) {
+    const referred = formData.get('referred') === 'true';
+    const success = await updateReferredStatus(id, referred);
+    if (success) {
+      return redirect('/admin?password=stokes2024');
+    } else {
+      return json({ error: 'Failed to update referred status' }, { status: 400 });
     }
   }
 
@@ -185,7 +195,7 @@ export default function Admin() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white rounded-lg shadow">
 
           {actionData?.error && (
@@ -344,6 +354,9 @@ export default function Admin() {
                       Date
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      State
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
@@ -382,6 +395,39 @@ function SubmissionRow({ submission }: { submission: FormSubmission }) {
       return `${submission.firstName} ${submission.lastName}`;
     }
     return submission.name || 'N/A';
+  };
+
+  const getStateAbbreviation = (submission: FormSubmission) => {
+    // First check if state is directly available
+    if (submission.state) {
+      return submission.state.toUpperCase();
+    }
+    
+    // If not, try to extract from message
+    if (submission.message) {
+      const stateMatch = submission.message.match(/STATE:\s*(.+)/i);
+      if (stateMatch) {
+        const state = stateMatch[1].trim();
+        // Convert full state names to abbreviations
+        const stateAbbreviations: { [key: string]: string } = {
+          'utah': 'UT',
+          'idaho': 'ID',
+          'nevada': 'NV',
+          'wyoming': 'WY',
+          'colorado': 'CO',
+          'arizona': 'AZ',
+          'california': 'CA',
+          'oregon': 'OR',
+          'washington': 'WA',
+          'montana': 'MT'
+        };
+        
+        const lowerState = state.toLowerCase();
+        return stateAbbreviations[lowerState] || state.toUpperCase();
+      }
+    }
+    
+    return 'N/A';
   };
 
   return (
@@ -556,6 +602,9 @@ function SubmissionRow({ submission }: { submission: FormSubmission }) {
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
         {formatDate(submission.timestamp)}
       </td>
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+        {getStateAbbreviation(submission)}
+      </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
         <div className="flex space-x-2">
           <button
@@ -592,6 +641,7 @@ function SubmissionRow({ submission }: { submission: FormSubmission }) {
       <dialog 
         id={`modal-${submission.id}`} 
         className="modal"
+        data-submission-id={submission.id}
         onClick={(e) => {
           // Close modal when clicking on the backdrop (outside the modal-box)
           if (e.target === e.currentTarget) {
@@ -634,6 +684,27 @@ function SubmissionRow({ submission }: { submission: FormSubmission }) {
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
                         </svg>
                         Pending Contact
+                      </>
+                    )}
+                  </span>
+                  <span className={`referred-status inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                    submission.referred 
+                      ? 'bg-blue-100 text-blue-800' 
+                      : 'bg-gray-100 text-gray-800'
+                  }`} data-submission-id={submission.id}>
+                    {submission.referred ? (
+                      <>
+                        <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                        Referred
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                        </svg>
+                        Not Referred
                       </>
                     )}
                   </span>
@@ -945,7 +1016,77 @@ function SubmissionRow({ submission }: { submission: FormSubmission }) {
 
           {/* Footer */}
           <div className="bg-gray-50 px-6 py-4 border-t">
-            <div className="flex justify-end">
+            <div className="flex justify-between items-center">
+              <button
+                onClick={() => {
+                  // Create email content with all submission details
+                  const emailSubject = `Referral: ${submission.subject || 'Well Drilling Inquiry'} - ${getDisplayName(submission)}`;
+                  
+                  let emailBody = `Dear Colleague,\n\n`;
+                  emailBody += `I'm referring a potential well drilling client to you:\n\n`;
+                  emailBody += `CONTACT INFORMATION:\n`;
+                  emailBody += `Name: ${getDisplayName(submission)}\n`;
+                  emailBody += `Email: ${submission.email}\n`;
+                  if (submission.phone) {
+                    emailBody += `Phone: ${submission.phone}\n`;
+                  }
+                  emailBody += `Preferred Contact: ${submission.bookPhoneCall === 'yes' ? 'Phone Call' : 'Email'}\n\n`;
+                  
+                  if (submission.message) {
+                    emailBody += `PROJECT DETAILS:\n`;
+                    emailBody += submission.message.replace(/:/g, ': ').replace(/\n/g, '\n');
+                    emailBody += `\n\n`;
+                  }
+                  
+                  if (submission.subject) {
+                    emailBody += `SUBJECT: ${submission.subject}\n\n`;
+                  }
+                  
+                  emailBody += `Submitted: ${formatDate(submission.timestamp)}\n`;
+                  emailBody += `Type: ${submission.type === 'request' ? 'Quote Request' : submission.type === 'contact' ? 'Contact Form' : 'Callback Request'}\n\n`;
+                  emailBody += `Please follow up with this client as soon as possible.\n\n`;
+                  emailBody += `Best regards,\n`;
+                  emailBody += `Stokes Drilling Team`;
+                  
+                  // Open email client with pre-filled content
+                  const mailtoLink = `mailto:?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+                  window.open(mailtoLink);
+                  
+                  // Mark as referred asynchronously without page reload
+                  if (!submission.referred) {
+                    fetch('/admin?password=stokes2024', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                      },
+                      body: new URLSearchParams({
+                        action: 'toggle-referred',
+                        id: submission.id,
+                        referred: 'true'
+                      })
+                    }).then(() => {
+                      // Update the UI immediately without page reload
+                      const referredPill = document.querySelector(`[data-submission-id="${submission.id}"] .referred-status`);
+                      if (referredPill) {
+                        referredPill.innerHTML = `
+                          <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                          </svg>
+                          Referred
+                        `;
+                        referredPill.className = 'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800';
+                      }
+                    }).catch(console.error);
+                  }
+                }}
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                Send to Email
+              </button>
+              
               <form method="dialog">
                 <button className="bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200">
                   Close

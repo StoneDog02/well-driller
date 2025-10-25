@@ -15,6 +15,7 @@ export interface FormSubmission {
   ip?: string;
   userAgent?: string;
   contacted?: boolean; // Whether the customer has been contacted
+  referred?: boolean; // Whether the submission has been referred via email
   // Request form fields
   state?: string;
   propertyLocation?: string;
@@ -98,6 +99,21 @@ export async function updateContactedStatus(id: string, contacted: boolean): Pro
   }
   
   submission.contacted = contacted;
+  
+  await fs.writeFile(SUBMISSIONS_FILE, JSON.stringify(submissions, null, 2));
+  return true;
+}
+
+// Update referred status
+export async function updateReferredStatus(id: string, referred: boolean): Promise<boolean> {
+  const submissions = await loadSubmissions();
+  const submission = submissions.find(s => s.id === id);
+  
+  if (!submission) {
+    return false; // Submission not found
+  }
+  
+  submission.referred = referred;
   
   await fs.writeFile(SUBMISSIONS_FILE, JSON.stringify(submissions, null, 2));
   return true;
