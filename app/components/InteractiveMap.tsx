@@ -7,9 +7,9 @@ interface InteractiveMapProps {
 }
 
 export function InteractiveMap({ 
-  center = { lat: 41.7314914, lng: -112.1645406 }, // Garland, UT coordinates
-  zoom = 12,
-  className = "w-full h-64"
+  center = { lat: 41.85, lng: -111.8 }, // Moved slightly more north
+  zoom = 9,
+  className = "w-full h-96"
 }: InteractiveMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
@@ -98,43 +98,33 @@ export function InteractiveMap({
       ]
     });
 
-    // Add a marker for your business location
-    new window.google.maps.Marker({
-      position: center,
+    // Add a circle to highlight the service area
+    const serviceAreaCircle = new window.google.maps.Circle({
+      strokeColor: '#dc2626', // Red border
+      strokeOpacity: 0.8,
+      strokeWeight: 3,
+      fillColor: '#dc2626', // Red fill
+      fillOpacity: 0.2,
       map: mapInstanceRef.current,
-      title: 'Stokes Water Well Drilling',
-      icon: {
-        url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-          <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="16" cy="16" r="12" fill="#1e40af" stroke="#ffffff" stroke-width="2"/>
-            <text x="16" y="20" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="12" font-weight="bold">S</text>
-          </svg>
-        `),
-        scaledSize: new window.google.maps.Size(32, 32),
-        anchor: new window.google.maps.Point(16, 16)
-      }
+      center: center,
+      radius: 50000 // 50km radius to cover the area from Preston, ID to Brigham City, UT
     });
 
-    // Add info window
+    // Add info window for the service area
     const infoWindow = new window.google.maps.InfoWindow({
       content: `
-        <div style="padding: 10px; max-width: 200px;">
-          <h3 style="margin: 0 0 8px 0; color: #1e40af; font-size: 16px; font-weight: bold;">Stokes Water Well Drilling</h3>
+        <div style="padding: 10px; max-width: 250px;">
+          <h3 style="margin: 0 0 8px 0; color: #dc2626; font-size: 16px; font-weight: bold;">Stokes Water Well Drilling</h3>
           <p style="margin: 0 0 8px 0; color: #374151; font-size: 14px;">Professional Well Drilling Services</p>
-          <p style="margin: 0; color: #6b7280; font-size: 12px;">Serving Garland, UT and surrounding areas</p>
+          <p style="margin: 0; color: #6b7280; font-size: 12px;">Serving Northern Utah & Southern Idaho</p>
         </div>
       `
     });
 
-    // Add click listener to marker
-    const marker = new window.google.maps.Marker({
-      position: center,
-      map: mapInstanceRef.current,
-      title: 'Stokes Water Well Drilling'
-    });
-
-    marker.addListener('click', () => {
-      infoWindow.open(mapInstanceRef.current, marker);
+    // Add click listener to the circle
+    serviceAreaCircle.addListener('click', () => {
+      infoWindow.setPosition(center);
+      infoWindow.open(mapInstanceRef.current);
     });
 
   }, [center, zoom]);

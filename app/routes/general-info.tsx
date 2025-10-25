@@ -38,7 +38,7 @@ export default function GeneralInfo() {
                 Service Area
               </h2>
               <p className="text-lg text-gray-700 mb-6 leading-relaxed">
-                We proudly serve residential customers in Garland, Utah and the surrounding communities. 
+                We proudly serve residential customers throughout Northern Utah and Southern Idaho. 
                 Our experienced team brings professional well drilling services directly to your property.
               </p>
               <p className="text-lg text-gray-700 mb-6 leading-relaxed">
@@ -54,16 +54,16 @@ export default function GeneralInfo() {
                   Contact us today to discuss your well drilling needs and get a free consultation.
                 </p>
                 <a
-                  href="tel:+14357649462"
-                  className="text-accent-800 hover:text-accent-900 font-semibold text-lg transition-colors duration-200"
+                  href="/request"
+                  className="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg text-lg transition-colors duration-200 inline-block"
                 >
-                  Call (435) 764-9462
+                  Request Quote
                 </a>
               </div>
             </div>
             <div className="card">
-              <div className="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden">
-                <InteractiveMap className="w-full h-full" />
+              <div className="rounded-lg overflow-hidden">
+                <InteractiveMap className="w-full h-96" />
               </div>
             </div>
           </div>
