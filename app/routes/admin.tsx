@@ -41,7 +41,8 @@ export const meta: MetaFunction = () => {
 export async function loader({ request }: LoaderFunctionArgs) {
   // Check for admin session cookie
   const cookieHeader = request.headers.get('Cookie');
-  const isAuthenticated = cookieHeader?.includes('admin-authenticated=true');
+  const cookieValue = await adminCookie.parse(cookieHeader);
+  const isAuthenticated = cookieValue === 'admin-authenticated=true';
   
   if (!isAuthenticated) {
     return json({ error: 'Unauthorized' }, { status: 401 });
@@ -74,7 +75,8 @@ export async function action({ request }: ActionFunctionArgs) {
   
   // Check authentication for other actions
   const cookieHeader = request.headers.get('Cookie');
-  const isAuthenticated = cookieHeader?.includes('admin-authenticated=true');
+  const cookieValue = await adminCookie.parse(cookieHeader);
+  const isAuthenticated = cookieValue === 'admin-authenticated=true';
   
   if (!isAuthenticated) {
     return json({ error: 'Unauthorized' }, { status: 401 });
