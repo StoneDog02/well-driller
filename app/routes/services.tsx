@@ -51,16 +51,9 @@ export default function Services() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* New Well Drilling */}
-            <div className="card overflow-hidden">
-              <div className="aspect-w-16 aspect-h-12 bg-gray-200">
-                <img
-                  src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
-                  alt="New well drilling equipment"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            <div className="card">
+              <div className="p-8">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">
                   New Well Drilling
                 </h3>
                 <p className="text-gray-600">
@@ -71,16 +64,9 @@ export default function Services() {
             </div>
 
             {/* Well Repairs */}
-            <div className="card overflow-hidden">
-              <div className="aspect-w-16 aspect-h-12 bg-gray-200">
-                <img
-                  src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
-                  alt="Well repair and maintenance work"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            <div className="card">
+              <div className="p-8">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">
                   Well Repairs
                 </h3>
                 <p className="text-gray-600">
@@ -91,16 +77,9 @@ export default function Services() {
             </div>
 
             {/* Water Testing */}
-            <div className="card overflow-hidden">
-              <div className="aspect-w-16 aspect-h-12 bg-gray-200">
-                <img
-                  src="https://images.unsplash.com/photo-1576085898323-218337e3e43c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
-                  alt="Water quality testing equipment"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            <div className="card">
+              <div className="p-8">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">
                   Water Testing
                 </h3>
                 <p className="text-gray-600">
@@ -111,16 +90,9 @@ export default function Services() {
             </div>
 
             {/* Pump Installation */}
-            <div className="card overflow-hidden">
-              <div className="aspect-w-16 aspect-h-12 bg-gray-200">
-                <img
-                  src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
-                  alt="Water pump installation and maintenance"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            <div className="card">
+              <div className="p-8">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">
                   Pump Installation
                 </h3>
                 <p className="text-gray-600">
@@ -131,16 +103,9 @@ export default function Services() {
             </div>
 
             {/* Well Maintenance */}
-            <div className="card overflow-hidden">
-              <div className="aspect-w-16 aspect-h-12 bg-gray-200">
-                <img
-                  src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
-                  alt="Well maintenance and inspection services"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            <div className="card">
+              <div className="p-8">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">
                   Well Maintenance
                 </h3>
                 <p className="text-gray-600">
@@ -151,16 +116,9 @@ export default function Services() {
             </div>
 
             {/* Emergency Service */}
-            <div className="card overflow-hidden">
-              <div className="aspect-w-16 aspect-h-12 bg-gray-200">
-                <img
-                  src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
-                  alt="Emergency well repair service"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            <div className="card">
+              <div className="p-8">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">
                   Emergency Service
                 </h3>
                 <p className="text-gray-600">

@@ -296,10 +296,10 @@ export default function Index() {
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-primary-600 mb-3">
-                    Local Garland, Utah Experts
+                    Local Northern Utah & Southern Idaho Experts
                   </h3>
                   <p className="text-gray-700 leading-relaxed">
-                    Stokes Drilling is a well-established well drilling contractor located in Garland, Utah. We are recognized for our reliability and commitment to serving the local community with high-quality drilling services. With 10+ years of experience and 200+ wells drilled, we have built a reputation for providing essential water well solutions to our clients.
+                    Stokes Drilling is a well-established well drilling contractor serving Northern Utah and Southern Idaho. We are recognized for our reliability and commitment to serving the local community with high-quality drilling services. With 50+ years of experience and countless wells drilled, we have built a reputation for providing essential water well solutions to our clients.
                   </p>
                 </div>
               </div>
@@ -316,7 +316,7 @@ export default function Index() {
                     Licensed Professional Team
                   </h3>
                   <p className="text-gray-700 leading-relaxed">
-                    Led by Zachary Larsen, our Owner & Lead Driller, we have a team of licensed well drilling professionals committed to delivering exceptional results. Our experienced technicians specialize in well repairs, pump installation, and water system maintenance, ensuring your family has the clean, reliable water they need for years to come.
+                    We have a team of licensed well drilling professionals committed to delivering exceptional results. Our experienced technicians specialize in well repairs, pump installation, and water system maintenance, ensuring your family has the clean, reliable water they need for years to come.
                   </p>
                 </div>
               </div>
