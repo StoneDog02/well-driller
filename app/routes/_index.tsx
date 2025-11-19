@@ -206,7 +206,8 @@ export default function Index() {
                   </div>
                 )}
 
-                <Form method="post" className="space-y-4">
+                <Form method="post" className="space-y-4" data-netlify="true" name="callback">
+                  <input type="hidden" name="form-name" value="callback" />
                   <div>
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
                       Name: *

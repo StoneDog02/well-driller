@@ -181,7 +181,8 @@ export default function Request() {
               </div>
             )}
 
-            <Form method="post" className="space-y-8">
+            <Form method="post" className="space-y-8" data-netlify="true" name="request">
+              <input type="hidden" name="form-name" value="request" />
               {/* Location Information */}
               <div className="border-b border-gray-200 pb-8">
                 <h3 className="text-xl font-semibold text-gray-900 mb-6">Location Information</h3>

@@ -34,7 +34,11 @@ export interface FormSubmission {
   questions?: string;
 }
 
-const STORAGE_DIR = path.join(process.cwd(), 'data');
+// Check if we're in a Netlify environment
+const isNetlify = process.env.NETLIFY === 'true' || process.env.NETLIFY_DEV === 'true';
+
+// Use /tmp in production (writable), data/ in development
+const STORAGE_DIR = isNetlify ? '/tmp/data' : path.join(process.cwd(), 'data');
 const SUBMISSIONS_FILE = path.join(STORAGE_DIR, 'submissions.json');
 
 // Ensure storage directory exists
