@@ -4,6 +4,7 @@ import { json, redirect } from "@remix-run/node";
 import { saveSubmission } from "~/lib/storage";
 import { GoogleReviews, ReviewSummary } from "~/components/GoogleReviews";
 import { formatReviewText, getInitials } from "~/lib/google-reviews";
+import { useEffect } from "react";
 
 export const meta: MetaFunction = () => {
   return [
@@ -72,6 +73,13 @@ export default function Index() {
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
   const loaderData = useLoaderData<typeof loader>();
+
+  // Auto-scroll to top on successful submission
+  useEffect(() => {
+    if (actionData && 'success' in actionData && actionData.success) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [actionData]);
 
   // Get a different review for the testimonial (4th review to avoid duplication with main reviews section)
   const testimonialReview = loaderData.reviewsData?.success && loaderData.reviewsData?.reviews?.length > 3 

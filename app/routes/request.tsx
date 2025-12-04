@@ -2,6 +2,7 @@ import type { MetaFunction, ActionFunctionArgs } from "@remix-run/node";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
 import { json } from "@remix-run/node";
 import { saveSubmission } from "~/lib/storage";
+import { useEffect } from "react";
 
 export const meta: MetaFunction = () => {
   return [
@@ -110,6 +111,13 @@ export default function Request() {
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 3 }, (_, i) => currentYear + i);
+
+  // Auto-scroll to top on successful submission
+  useEffect(() => {
+    if (actionData && 'success' in actionData && actionData.success) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [actionData]);
 
   return (
     <div className="min-h-screen bg-gray-50">

@@ -3,6 +3,7 @@ import { Form, useActionData, useNavigation } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
 import { saveSubmission } from "~/lib/storage";
 import { InteractiveMap } from "~/components/InteractiveMap";
+import { useEffect } from "react";
 
 export const meta: MetaFunction = () => {
   return [
@@ -69,6 +70,13 @@ export default function Contact() {
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
+
+  // Auto-scroll to top on successful submission
+  useEffect(() => {
+    if (actionData && 'success' in actionData && actionData.success) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [actionData]);
 
   return (
     <div className="min-h-screen">
