@@ -91,6 +91,11 @@ Questions: ${questions || 'None'}`,
     return json({ success: true });
   } catch (error) {
     console.error('Error saving request submission:', error);
+    // Log the full error for debugging
+    if (error instanceof Error) {
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+    }
     return json(
       { error: "There was an error submitting your request. Please try again." },
       { status: 500 }

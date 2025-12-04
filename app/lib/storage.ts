@@ -38,11 +38,19 @@ export interface FormSubmission {
 const isNetlify = process.env.NETLIFY === 'true' || process.env.NETLIFY_DEV === 'true';
 
 // Use /tmp in production (writable), data/ in development
-const STORAGE_DIR = isNetlify ? '/tmp/data' : path.join(process.cwd(), 'data');
-const SUBMISSIONS_FILE = path.join(STORAGE_DIR, 'submissions.json');
+// On Netlify, /tmp is the only writable directory
+const STORAGE_DIR = isNetlify ? '/tmp' : path.join(process.cwd(), 'data');
+const SUBMISSIONS_FILE = isNetlify 
+  ? '/tmp/submissions.json' 
+  : path.join(STORAGE_DIR, 'submissions.json');
 
 // Ensure storage directory exists
 async function ensureStorageDir() {
+  // /tmp already exists on Netlify, no need to create it
+  if (isNetlify) {
+    return;
+  }
+  
   try {
     await fs.access(STORAGE_DIR);
   } catch {
@@ -64,18 +72,32 @@ export async function loadSubmissions(): Promise<FormSubmission[]> {
 
 // Save a new submission
 export async function saveSubmission(submission: Omit<FormSubmission, 'id' | 'timestamp'>): Promise<FormSubmission> {
-  await ensureStorageDir();
-  
-  const submissions = await loadSubmissions();
   const newSubmission: FormSubmission = {
     ...submission,
     id: generateId(),
     timestamp: new Date().toISOString(),
   };
   
-  submissions.push(newSubmission);
-  
-  await fs.writeFile(SUBMISSIONS_FILE, JSON.stringify(submissions, null, 2));
+  // Try to save to file system (for admin panel)
+  // If this fails, we don't throw - Netlify Forms will capture it anyway
+  try {
+    await ensureStorageDir();
+    const submissions = await loadSubmissions();
+    submissions.push(newSubmission);
+    await fs.writeFile(SUBMISSIONS_FILE, JSON.stringify(submissions, null, 2), 'utf-8');
+  } catch (error) {
+    // Log the error but don't fail the request
+    // Netlify Forms (with data-netlify="true") will capture the submission
+    console.error('Warning: Failed to save submission to file system:', error);
+    console.error('Storage directory:', STORAGE_DIR);
+    console.error('Submissions file:', SUBMISSIONS_FILE);
+    console.error('Is Netlify:', isNetlify);
+    if (error instanceof Error) {
+      console.error('Error message:', error.message);
+      console.error('Error code:', (error as any).code);
+    }
+    // Continue - the submission will still be captured by Netlify Forms
+  }
   
   return newSubmission;
 }
