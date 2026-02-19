@@ -2,6 +2,7 @@ import type { MetaFunction, ActionFunctionArgs } from "@remix-run/node";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
 import { saveSubmission } from "~/lib/storage";
+import { sendAdminNotification } from "~/lib/email";
 import { InteractiveMap } from "~/components/InteractiveMap";
 import { useEffect } from "react";
 
@@ -44,7 +45,7 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   try {
-    await saveSubmission({
+    const saved = await saveSubmission({
       type: 'contact',
       firstName,
       lastName,
@@ -55,6 +56,8 @@ export async function action({ request }: ActionFunctionArgs) {
       ip: request.headers.get('x-forwarded-for') || 'unknown',
       userAgent: request.headers.get('user-agent') || 'unknown',
     });
+
+    await sendAdminNotification(saved);
 
     return json({ success: true });
   } catch (error) {

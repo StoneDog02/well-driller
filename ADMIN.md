@@ -1,7 +1,7 @@
 # Admin Panel Documentation
 
 ## Overview
-The admin panel allows you to view and manage form submissions from your website without relying on email notifications.
+The admin panel lets you view and manage form submissions from your website. You can also receive an automatic email notification for each new submission (optional; see **Email notifications** below).
 
 ## Accessing the Admin Panel
 
@@ -29,6 +29,25 @@ The admin panel allows you to view and manage form submissions from your website
 - **Contact**: Full contact form submissions from the Contact page
 - **Callback**: Quick callback requests from the homepage
 
+## Email notifications (optional)
+
+When a user submits the **Request a Quote**, **Contact**, or **Callback** form, the submission is always saved to storage and shown in the admin panel. You can additionally have a copy sent to an email address you choose.
+
+To enable admin notification emails:
+
+1. **Get a Resend API key**
+   - Sign up at [resend.com](https://resend.com) and create an API key in the dashboard.
+   - For testing you can send from `onboarding@resend.dev`. For production, verify your own domain in Resend.
+
+2. **Set environment variables** (in Netlify: Site settings → Environment variables; locally: `.env`):
+   - **`ADMIN_NOTIFICATION_EMAIL`** – The email address that should receive each new submission (e.g. `admin@yourdomain.com`).
+   - **`RESEND_API_KEY`** – Your Resend API key (e.g. `re_...`).
+
+3. **Optional**
+   - **`NOTIFICATION_FROM_EMAIL`** – Sender address and name (default: `Stokes Water Well <onboarding@resend.dev>`). Use a verified domain in production, e.g. `Stokes Water Well <notifications@yourdomain.com>`.
+
+If these are not set, submissions still save and appear in the admin panel; only the email step is skipped. Email failures are logged but do not block or fail the form submission.
+
 ## Data Storage
 - All submissions are stored in a JSON file at `data/submissions.json`
 - No database required - simple file-based storage
@@ -42,7 +61,6 @@ The admin panel allows you to view and manage form submissions from your website
 
 ## Future Enhancements
 - Export submissions to CSV/Excel
-- Email notifications for new submissions
 - Search and filter functionality
 - Response tracking
 - Integration with CRM systems

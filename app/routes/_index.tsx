@@ -2,6 +2,7 @@ import type { MetaFunction, ActionFunctionArgs, LoaderFunctionArgs } from "@remi
 import { Form, useActionData, useNavigation, useLoaderData } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
 import { saveSubmission } from "~/lib/storage";
+import { sendAdminNotification } from "~/lib/email";
 import { GoogleReviews, ReviewSummary } from "~/components/GoogleReviews";
 import { formatReviewText, getInitials } from "~/lib/google-reviews";
 import { useEffect } from "react";
@@ -49,7 +50,7 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   try {
-    await saveSubmission({
+    const saved = await saveSubmission({
       type: 'callback',
       name,
       email,
@@ -57,6 +58,8 @@ export async function action({ request }: ActionFunctionArgs) {
       ip: request.headers.get('x-forwarded-for') || 'unknown',
       userAgent: request.headers.get('user-agent') || 'unknown',
     });
+
+    await sendAdminNotification(saved);
 
     return json({ success: true });
   } catch (error) {

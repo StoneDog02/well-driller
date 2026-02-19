@@ -2,6 +2,7 @@ import type { MetaFunction, ActionFunctionArgs } from "@remix-run/node";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
 import { json } from "@remix-run/node";
 import { saveSubmission } from "~/lib/storage";
+import { sendAdminNotification } from "~/lib/email";
 import { useEffect } from "react";
 
 export const meta: MetaFunction = () => {
@@ -64,7 +65,7 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   try {
-    await saveSubmission({
+    const saved = await saveSubmission({
       type: 'request',
       firstName,
       lastName,
@@ -88,6 +89,8 @@ Questions: ${questions || 'None'}`,
       ip: request.headers.get('x-forwarded-for') || 'unknown',
       userAgent: request.headers.get('user-agent') || 'unknown',
     });
+
+    await sendAdminNotification(saved);
 
     return json({ success: true });
   } catch (error) {
